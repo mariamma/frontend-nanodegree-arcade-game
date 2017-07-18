@@ -13,6 +13,7 @@ var canvas = document.createElement('canvas'),
 
     var loadedPlayers = false;
     var choosePlayer = false;
+    var exitGame = false;
 
     var lastTime = Date.now();
     var playerLife = 3;
@@ -81,12 +82,14 @@ var canvas = document.createElement('canvas'),
     Resources.onReady(initScreen);
 
     function initScreen(){
-        resetVariables();
-        initGems();
-        drawScreen();
-        var topLine = "ARCADE GAME";
-        var bottomLine = "Press any key to start";
-        writeText(topLine, bottomLine);
+        if(exitGame == false){
+            resetVariables();
+            initGems();
+            drawScreen();
+            var topLine = "ARCADE GAME";
+            var bottomLine = "Press any key to start";
+            writeText(topLine, bottomLine);
+        }
     }
 
     function resetVariables(){
@@ -157,15 +160,18 @@ var canvas = document.createElement('canvas'),
     }
 
     function loadPlayers(){
-        console.log("Load players");
-        drawScreen();
-        drawPlayers();
-        var topLine = "ARCADE GAME";
-        var bottomLine = "Choose Players!!";
-        writeText(topLine, bottomLine);
+        if(exitGame == false){
+            console.log("Load players");
+            drawScreen();
+            drawPlayers();
+            var topLine = "ARCADE GAME";
+            var bottomLine = "Choose Players!!";
+            writeText(topLine, bottomLine);
+        }
     }
 
     function loadChosenPlayer(i, count){
+    if(exitGame == false){
         drawScreen();
         var rowImages = [
             'images/char-boy.png',
@@ -198,6 +204,7 @@ var canvas = document.createElement('canvas'),
             main();
         }
     }
+    }
  
     function handleKeyboardEvent(event){
         if(gameOverVariable == true){
@@ -216,6 +223,29 @@ var canvas = document.createElement('canvas'),
         }else{
             console.log("Players already loaded" + event.keyCode);
         }
+    }
+
+    function onClickExitButton(){
+        console.log("In exit handling");
+        var message = "Do you really want to exit?";
+        var result = window.confirm(message);
+        console.log("Result of exit button " + result);
+        if(result == true){
+            exitGame = true;
+            stopGame();
+            exitGameScreen(1);
+        }
+    }
+
+    function exitGameScreen(count){
+        drawScreen();
+        var bottomLine = "EXITING GAME!!";
+        writeText("ARCADE GAME", bottomLine);
+        setTimeout(function(){
+                     console.log("Waiting to exit.... " + bottomLine);
+                     //exitGameScreen(count);
+                     window.close();
+                }, 3000);
     }
 
     function supportsLocalStorage(){
@@ -239,7 +269,11 @@ var canvas = document.createElement('canvas'),
         if (requestId != undefined) {
             requestId = window.requestAnimationFrame(main);
         }else{
+             if(exitGame == true){
+                exitGameScreen();
+             }else{  
              gameOver();
+            }
         }
     }
 
@@ -292,7 +326,7 @@ var canvas = document.createElement('canvas'),
         setTimeout(function(){
                  console.log("Waiting....");
                  initScreen();
-            }, 5000);
+            }, 4000);
     }
 
     function main() {
